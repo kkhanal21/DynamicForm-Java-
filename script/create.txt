@@ -1,0 +1,64 @@
+--create master entities
+--1.create form table
+--2.create form field table
+--3.create form Option table
+--4.create form response table
+--5.create form response option table
+
+--Drop tables
+DROP TABLE IF EXISTS tbl_forms cascade;
+DROP TABLE IF EXISTS tbl_form_fields cascade;
+DROP TABLE IF EXISTS tbl_form_options cascade;
+DROP TABLE IF EXISTS tbl_form_responses cascade;
+DROP TABLE IF EXISTS  tbl_form_reponse_options cascade;
+
+
+--1) create form table
+CREATE table tbl_forms(
+    form_id serial primary key not null,
+    form_name varchar (50) not null,
+    description text not null,
+    added_date TIMESTAMP default CURRENT_TIMESTAMP,    
+    status boolean default false
+);
+
+
+
+--2) create form field table
+CREATE table tbl_form_fields(
+    field_id serial primary key not null,
+    field_name varchar (50) not null
+    )
+    
+--3) create form Option table
+-- create TYPE f_type AS ENUM ('Text', 'TextArea', 'Select','Radio','Checkbox');
+CREATE table tbl_form_options(
+    option_id serial primary key not null,
+    form_id INTEGER not null,
+    field_id INTEGER not null,
+    f_type  f_type not null,
+    is_required boolean default false,
+    display_order INTEGER not null,
+	f_value text not null,
+    CONSTRAINT fk_form_id_form_options FOREIGN KEY (form_id) REFERENCES tbl_forms(form_id),
+     CONSTRAINT fk_field_id_form_options FOREIGN KEY (field_id) REFERENCES tbl_form_fields(field_id)
+    )
+
+--4) create form response table
+create table tbl_form_responses(
+    response_id serial primary key not null,
+    form_id INTEGER not null,
+    ipAddress VARCHAR (100) not null,
+    added_date TIMESTAMP default CURRENT_TIMESTAMP,
+     CONSTRAINT fk_form_id_form_responses FOREIGN KEY (form_id) REFERENCES tbl_forms(form_id)
+      )
+      
+--5) create form response option table
+create table tbl_form_reponse_options(
+    response_option_id serial primary key not null,
+    response_id INTEGER not null,
+    field_id INTEGER not null,
+    response_option text not null,
+     CONSTRAINT fk_response_id_form_reponse_options FOREIGN KEY (response_id) REFERENCES tbl_form_responses(response_id),
+     CONSTRAINT fk_field_id_form_reponse_options FOREIGN KEY (field_id) REFERENCES tbl_form_fields(field_id)
+)
